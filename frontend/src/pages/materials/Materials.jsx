@@ -44,35 +44,46 @@ export default function Materials() {
 
   // Upload function
   const handleUpload = async () => {
-    try {
-      if (!title || !uploadSubjectId || !file) {
-        alert("Title, Subject and File are required.");
-        return;
-      }
-
-      const formData = new FormData();
-      formData.append("title", title);
-      formData.append("description", description);
-      formData.append("subjectId", uploadSubjectId);
-      formData.append("file", file);
-
-      await api.post("/materials", formData);
-
-      alert("Uploaded successfully");
-
-      setOpen(false);
-      setTitle("");
-      setDescription("");
-      setUploadSubjectId("");
-      setFile(null);
-
-      fetchMaterials();
-    } catch (err) {
-      console.error(err);
-      alert("Upload failed");
+  try {
+    if (!title || !uploadSubjectId || !file) {
+      alert("Title, Subject and File are required.");
+      return;
     }
-  };
 
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("description", description);
+    formData.append("subjectId", uploadSubjectId);
+    formData.append("file", file);
+
+    const res = await api.post("/materials", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    console.log("UPLOAD RESPONSE:", res.data);
+
+    alert("Uploaded successfully ✅");
+
+    setOpen(false);
+    setTitle("");
+    setDescription("");
+    setUploadSubjectId("");
+    setFile(null);
+
+    fetchMaterials();
+
+  } catch (err) {
+    console.error("UPLOAD ERROR:", err.response?.data || err.message);
+
+    alert(
+      err.response?.data?.message ||
+      "Upload failed ❌"
+    );
+  }
+};
+  
   return (
     <div className="container">
       <h1>Materials</h1>

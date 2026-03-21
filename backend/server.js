@@ -56,7 +56,7 @@ const PORT = process.env.PORT || 5000;
 
 const syncModels = async () => {
   const models = [User, Subject, Material, Question, QuestionAttempt, Test, TestQuestion, TestAttempt, Roadmap, RoadmapProgress, Bookmark, Announcement, Contest, ContestSubmission, Note, NoteFolder, FeatureFlag];
-  for (const M of models) await M.sync();
+  for (const M of models) await M.sync({alter: true });
   console.log("All tables synced");
 };
 

@@ -12,7 +12,7 @@ const Material = sequelize.define(
       defaultValue: "other",
     },
     subjectId: { type: DataTypes.INTEGER, allowNull: false },
-    uploadedById: { type: DataTypes.INTEGER, allowNull: false },
+    uploadedById: { type: DataTypes.INTEGER, allowNull: true },
   },
   { timestamps: true }
 );

@@ -49,18 +49,27 @@ export default function Notes() {
   }, [selected?.id]);
 
   useEffect(() => {
-    if (!selected || saving) return;
+    if (!selected) return;
+
     const t = setTimeout(() => {
       if (!title.trim() && !content) return;
+
       setSaving(true);
       const payload = { title: title || "Untitled", content };
+
       if (selected.id) {
-        api.put(`/notes/${selected.id}`, payload)
-          .then(() => toast.success("Saved"))
-          .catch(() => toast.error("Save failed"))
+        api
+          .put(`/notes/${selected.id}`, payload)
+          .then(() => {
+            toast.success("Saved");
+          })
+          .catch(() => {
+            toast.error("Unable to save notes");
+          })
           .finally(() => setSaving(false));
       } else {
-        api.post("/notes", payload)
+        api
+          .post("/notes", payload)
           .then((r) => {
             if (r.data.success) {
               setSelected(r.data.data);
@@ -68,12 +77,15 @@ export default function Notes() {
               toast.success("Created");
             }
           })
-          .catch(() => toast.error("Create failed"))
+          .catch(() => {
+            toast.error("Unable to save notes");
+          })
           .finally(() => setSaving(false));
       }
     }, AUTO_SAVE_MS);
+
     return () => clearTimeout(t);
-  }, [title, content, selected?.id]);
+  }, [title, content, selected?.id, loadNotes, selected, content, title]);
 
   const createNew = () => {
     setSelected({ id: null, title: "", content: "" });
