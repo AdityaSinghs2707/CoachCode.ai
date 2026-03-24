@@ -11,7 +11,7 @@ cd backend
 cp .env.example .env
 # Edit .env: set DB_NAME, DB_USER, DB_PASSWORD, JWT_SECRET
 npm install
-npm run dev
+npm run dev 
 ```
 
 Server runs at `http://localhost:5000`. API base: `http://localhost:5000/api`.
