@@ -64,43 +64,44 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 5000;
 
 // 🔥 FIXED SYNC MODELS
-const syncModels = async () => {
-  const models = [
-    User,
-    Subject,
-    Material,
-    Question,
-    QuestionAttempt,
-    QuestionTestCase,
-    Test,
-    TestQuestion,
-    TestAttempt,
-    Roadmap,
-    RoadmapProgress,
-    Bookmark,
-    Announcement,
-    Contest,
-    ContestSubmission,
-    Note,
-    NoteFolder,
-    FeatureFlag,
+// const syncModels = async () => {
+//   const models = [
+//     User,
+//     Subject,
+//     Material,
+//     Question,
+//     QuestionAttempt,
+//     QuestionTestCase,
+//     Test,
+//     TestQuestion,
+//     TestAttempt,
+//     Roadmap,
+//     RoadmapProgress,
+//     Bookmark,
+//     Announcement,
+//     Contest,
+//     ContestSubmission,
+//     Note,
+//     NoteFolder,
+//     FeatureFlag,
 
-    // 🔥 MOST IMPORTANT
-    Quiz,
-    QuizQuestion,
-    Attempt,
-  ];
+//     // 🔥 MOST IMPORTANT
+//     Quiz,
+//     QuizQuestion,
+//     Attempt,
+//   ];
 
-  for (const M of models) {
-    await M.sync();
-  }
+//   for (const M of models) {
+//     await M.sync();
+//   }
 
-  console.log("All tables synced");
-};
+//   console.log("All tables synced");
+// }; --> Commented during deployment
+
 
 // Start server
 connectDB()
-  .then(() => syncModels())
+  //.then(() => syncModels()) --> Commented during deployment
   .then(() =>
     app.listen(PORT, () =>
       console.log(`Server running on port ${PORT}`)
