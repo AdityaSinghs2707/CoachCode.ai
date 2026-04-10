@@ -1,5 +1,5 @@
 # CoachCode.ai — System Architecture & Development Guide
-
+ 
 ## 1. System Architecture Overview
 
 ```
