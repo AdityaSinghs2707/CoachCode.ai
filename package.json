@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "cd frontend && npm install && npm run build"
+    "build": "npm install --prefix backend && npm install --prefix frontend && npm run build --prefix frontend"
   },
   "dependencies": {
     "express": "^5.2.1",
@@ -12,6 +12,7 @@
     "helmet": "^7.1.0",
     "sequelize": "^6.37.7",
     "sqlite3": "^5.1.7",
+    "mysql2": "^3.17.2",
     "bcryptjs": "^3.0.3",
     "jsonwebtoken": "^9.0.3",
     "express-rate-limit": "^7.1.5",

@@ -1,11 +1,22 @@
-const app = require("../backend/server");
-const db = require("../backend/config/db");
+let app;
+let db;
+
+try {
+  app = require("../backend/server");
+  db = require("../backend/config/db");
+} catch (err) {
+  console.error("Vercel module load error:", err);
+}
 
 let isSynced = false;
 
 module.exports = async (req, res) => {
   try {
-    if (!isSynced) {
+    if (!app || !db) {
+      app = require("../backend/server");
+      db = require("../backend/config/db");
+    }
+    if (!isSynced && db) {
       await db.connectDB();
       await db.sequelize.sync();
       isSynced = true;
