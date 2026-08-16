@@ -4,16 +4,16 @@ const path = require("path");
 
 let sequelize;
 
-const createSequelizeInstance = () => {
-  if (process.env.USE_SQLITE === "true") {
-    return new Sequelize({
-      dialect: "sqlite",
-      storage: path.join(__dirname, "../database.sqlite"),
-      logging: false,
-    });
-  }
-
-  return new Sequelize(
+if (process.env.USE_SQLITE === "true" || process.env.NODE_ENV !== "production") {
+  // Use SQLite for local development so no local MySQL installation or password issues occur
+  sequelize = new Sequelize({
+    dialect: "sqlite",
+    storage: path.join(__dirname, "../database.sqlite"),
+    logging: false,
+  });
+} else {
+  // Use MySQL for production deployment (Render / AWS / GCP)
+  sequelize = new Sequelize(
     process.env.DB_NAME || "coachcode",
     process.env.DB_USER || "root",
     process.env.DB_PASSWORD || "",
@@ -24,37 +24,18 @@ const createSequelizeInstance = () => {
       logging: false,
     }
   );
-};
-
-sequelize = createSequelizeInstance();
+}
 
 const connectDB = async () => {
   try {
     await sequelize.authenticate();
-    console.log("Database Connected ✅");
+    console.log(`Database Connected (${sequelize.getDialect().toUpperCase()}) ✅`);
   } catch (error) {
-    console.warn("MySQL connection failed, falling back to local SQLite database 🔄...", error.message);
-    
-    // Fallback to local SQLite so registration & app always work
-    sequelize = new Sequelize({
-      dialect: "sqlite",
-      storage: path.join(__dirname, "../database.sqlite"),
-      logging: false,
-    });
-
-    // Update exported instance methods
-    try {
-      await sequelize.authenticate();
-      console.log("Local SQLite Database Connected ✅");
-    } catch (sqliteErr) {
-      console.error("Database connection error ❌", sqliteErr);
-    }
+    console.error("Database connection error ❌", error.message);
   }
 };
 
 module.exports = {
-  get sequelize() {
-    return sequelize;
-  },
+  sequelize,
   connectDB,
 };
