@@ -125,8 +125,7 @@ export default function Practice() {
     if (submissionFilter.status) params.status = submissionFilter.status;
     if (submissionFilter.language) params.language = submissionFilter.language;
     api.get("/questions/submissions/mine", { params })
-      .then((r) => r.data?.success && setSubmissions(r.data.data || []))
-      .catch(() => toast.error("Failed to load submissions"));
+      .catch(() => setSubmissions([]));
   };
 
   useEffect(() => {
