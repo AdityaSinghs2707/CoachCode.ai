@@ -1,20 +1,24 @@
 require("dotenv").config();
 const { Sequelize } = require("sequelize");
 const path = require("path");
-const sqlite3 = require("sqlite3");
-const mysql2 = require("mysql2");
+
+let sqlite3;
+try {
+  sqlite3 = require("sqlite3");
+} catch (e) {
+  console.warn("sqlite3 module note:", e.message);
+}
+
+let mysql2;
+try {
+  mysql2 = require("mysql2");
+} catch (e) {
+  console.warn("mysql2 module note:", e.message);
+}
 
 let sequelize;
 
-if (process.env.VERCEL || process.env.NOW_REGION) {
-  // Use in-memory SQLite with explicit dialectModule for Vercel serverless bundling
-  sequelize = new Sequelize({
-    dialect: "sqlite",
-    dialectModule: sqlite3,
-    storage: ":memory:",
-    logging: false,
-  });
-} else if (process.env.DB_HOST && process.env.DB_HOST !== "localhost") {
+if (process.env.DB_HOST && process.env.DB_HOST !== "localhost") {
   // Use Cloud MySQL when DB_HOST is configured
   sequelize = new Sequelize(
     process.env.DB_NAME || "coachcode",
@@ -24,16 +28,17 @@ if (process.env.VERCEL || process.env.NOW_REGION) {
       host: process.env.DB_HOST,
       port: process.env.DB_PORT || 3306,
       dialect: "mysql",
-      dialectModule: mysql2,
+      dialectModule: mysql2 || undefined,
       logging: false,
     }
   );
 } else {
-  // Use local file SQLite for local development
+  // Use SQLite for local development & Vercel serverless demo
+  const isVercel = Boolean(process.env.VERCEL || process.env.NOW_REGION);
   sequelize = new Sequelize({
     dialect: "sqlite",
-    dialectModule: sqlite3,
-    storage: path.join(__dirname, "../database.sqlite"),
+    dialectModule: sqlite3 || undefined,
+    storage: isVercel ? ":memory:" : path.join(__dirname, "../database.sqlite"),
     logging: false,
   });
 }
