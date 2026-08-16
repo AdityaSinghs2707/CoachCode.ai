@@ -4,13 +4,15 @@ const path = require("path");
 
 let sequelize;
 
-// On Vercel Serverless, root filesystem is read-only. Writable folder is /tmp
-const sqlitePath = process.env.VERCEL
-  ? "/tmp/database.sqlite"
-  : path.join(__dirname, "../database.sqlite");
-
-if (process.env.DB_HOST && process.env.DB_HOST !== "localhost") {
-  // Use Cloud MySQL when DB_HOST is configured (e.g. Aiven / PlanetScale / Render MySQL)
+if (process.env.VERCEL || process.env.NOW_REGION) {
+  // Use in-memory SQLite on Vercel serverless functions for 100% reliable zero-config demo mode
+  sequelize = new Sequelize({
+    dialect: "sqlite",
+    storage: ":memory:",
+    logging: false,
+  });
+} else if (process.env.DB_HOST && process.env.DB_HOST !== "localhost") {
+  // Use Cloud MySQL when DB_HOST is configured
   sequelize = new Sequelize(
     process.env.DB_NAME || "coachcode",
     process.env.DB_USER || "root",
@@ -23,10 +25,10 @@ if (process.env.DB_HOST && process.env.DB_HOST !== "localhost") {
     }
   );
 } else {
-  // Use SQLite for local development & Vercel serverless demo mode
+  // Use local file SQLite for local development
   sequelize = new Sequelize({
     dialect: "sqlite",
-    storage: sqlitePath,
+    storage: path.join(__dirname, "../database.sqlite"),
     logging: false,
   });
 }

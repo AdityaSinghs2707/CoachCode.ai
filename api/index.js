@@ -1,17 +1,21 @@
 const app = require("../backend/server");
 const db = require("../backend/config/db");
 
-let isInitialized = false;
+let isSynced = false;
 
 module.exports = async (req, res) => {
-  if (!isInitialized) {
-    try {
+  try {
+    if (!isSynced) {
       await db.connectDB();
       await db.sequelize.sync();
-    } catch (err) {
-      console.error("Vercel DB Init note:", err.message);
+      isSynced = true;
     }
-    isInitialized = true;
+    return app(req, res);
+  } catch (err) {
+    console.error("Vercel Serverless Function error:", err);
+    return res.status(500).json({
+      success: false,
+      message: err.message || "Serverless Function Execution Error",
+    });
   }
-  return app(req, res);
 };
