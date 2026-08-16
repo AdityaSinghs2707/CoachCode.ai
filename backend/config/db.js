@@ -1,13 +1,16 @@
 require("dotenv").config();
 const { Sequelize } = require("sequelize");
 const path = require("path");
+const sqlite3 = require("sqlite3");
+const mysql2 = require("mysql2");
 
 let sequelize;
 
 if (process.env.VERCEL || process.env.NOW_REGION) {
-  // Use in-memory SQLite on Vercel serverless functions for 100% reliable zero-config demo mode
+  // Use in-memory SQLite with explicit dialectModule for Vercel serverless bundling
   sequelize = new Sequelize({
     dialect: "sqlite",
+    dialectModule: sqlite3,
     storage: ":memory:",
     logging: false,
   });
@@ -21,6 +24,7 @@ if (process.env.VERCEL || process.env.NOW_REGION) {
       host: process.env.DB_HOST,
       port: process.env.DB_PORT || 3306,
       dialect: "mysql",
+      dialectModule: mysql2,
       logging: false,
     }
   );
@@ -28,6 +32,7 @@ if (process.env.VERCEL || process.env.NOW_REGION) {
   // Use local file SQLite for local development
   sequelize = new Sequelize({
     dialect: "sqlite",
+    dialectModule: sqlite3,
     storage: path.join(__dirname, "../database.sqlite"),
     logging: false,
   });
