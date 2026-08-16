@@ -3,7 +3,7 @@ const express = require("express");
 const cors = require("cors");
 const path = require("path");
 const fs = require("fs");
-const { connectDB } = require("./config/db");
+const { sequelize, connectDB } = require("./config/db");
 const routes = require("./routes");
 const { helmetMiddleware, generalLimiter, authLimiter } = require("./middleware/security");
 
@@ -101,12 +101,17 @@ const PORT = process.env.PORT || 5000;
 
 // Start server
 connectDB()
-  //.then(() => syncModels()) --> Commented during deployment
-  .then(() =>
+  .then(async () => {
+    try {
+      await sequelize.sync();
+      console.log("All Database tables synced successfully ✅");
+    } catch (e) {
+      console.error("Database table sync note:", e.message);
+    }
     app.listen(PORT, () =>
-      console.log(`Server running on port ${PORT}`)
-    )
-  )
+      console.log(`Server running on port ${PORT} ✅`)
+    );
+  })
   .catch((err) => {
     console.error("Startup failed:", err);
     process.exit(1);
