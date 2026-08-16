@@ -100,19 +100,23 @@ const PORT = process.env.PORT || 5000;
 
 
 // Start server
-db.connectDB()
-  .then(async () => {
-    try {
-      await db.sequelize.sync();
-      console.log("All Database tables synced successfully ✅");
-    } catch (e) {
-      console.error("Database table sync note:", e.message);
-    }
-    app.listen(PORT, () =>
-      console.log(`Server running on port ${PORT} ✅`)
-    );
-  })
-  .catch((err) => {
-    console.error("Startup failed:", err);
-    process.exit(1);
-  });
+if (require.main === module) {
+  db.connectDB()
+    .then(async () => {
+      try {
+        await db.sequelize.sync();
+        console.log("All Database tables synced successfully ✅");
+      } catch (e) {
+        console.error("Database table sync note:", e.message);
+      }
+      app.listen(PORT, () =>
+        console.log(`Server running on port ${PORT} ✅`)
+      );
+    })
+    .catch((err) => {
+      console.error("Startup failed:", err);
+      process.exit(1);
+    });
+}
+
+module.exports = app;
